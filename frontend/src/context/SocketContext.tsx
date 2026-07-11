@@ -85,7 +85,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     // Connect directly to the backend to avoid Vite WS proxy instability on Windows.
     // The backend has CORS origin:'*' so no cross-origin issues.
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://arenamid-ai-1.onrender.com';
     const newSocket = io(BACKEND_URL, {
       // Start with polling (HTTP long-poll) so the Socket.IO handshake
       // completes before upgrading to WebSocket. Forcing 'websocket' first

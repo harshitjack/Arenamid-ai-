@@ -7,7 +7,7 @@ import './index.css'
 const originalFetch = window.fetch;
 window.fetch = async (input, init) => {
   if (typeof input === 'string' && input.startsWith('/api/')) {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://arenamid-ai-1.onrender.com';
     // Ensure we don't have double slashes
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     const targetUrl = `${cleanBaseUrl}${input}`;
