@@ -1,8 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { GlassCard } from '../components/GlassCard';
-import { Cpu, Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Cpu, Lock, Mail, AlertCircle, Eye, EyeOff, Zap, ChevronRight } from 'lucide-react';
+
+// Demo accounts - one-click instant access, no credentials needed
+const DEMO_ACCOUNTS = [
+  {
+    label: 'Organizer (Admin)',
+    email: 'admin@arenamind.com',
+    password: 'admin123',
+    description: 'Full system access',
+    color: 'neonBlue',
+    ring: 'focus:ring-blue-400',
+    border: 'hover:border-blue-400/40',
+    badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  },
+  {
+    label: 'Field Volunteer',
+    email: 'volunteer@arenamind.com',
+    password: 'volunteer123',
+    description: 'Task & incident management',
+    color: 'emeraldGreen',
+    ring: 'focus:ring-emerald-400',
+    border: 'hover:border-emerald-400/40',
+    badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  },
+  {
+    label: 'Stadium Staff',
+    email: 'staff@arenamind.com',
+    password: 'staff123',
+    description: 'Operations dashboard',
+    color: 'stadiumPurple',
+    ring: 'focus:ring-purple-400',
+    border: 'hover:border-purple-400/40',
+    badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  },
+  {
+    label: 'Stadium Fan',
+    email: 'fan@arenamind.com',
+    password: 'fan123',
+    description: 'Fan experience view',
+    color: 'amber',
+    ring: 'focus:ring-amber-400',
+    border: 'hover:border-amber-400/40',
+    badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  },
+];
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
@@ -12,17 +56,16 @@ export const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
 
+  // Manual form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const success = await login(email, password);
-      if (success) {
-        navigate('/');
-      }
+      if (success) navigate('/');
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check credentials.');
     } finally {
@@ -30,53 +73,92 @@ export const Login: React.FC = () => {
     }
   };
 
-  const handleQuickLogin = (roleEmail: string, rolePass: string) => {
-    setEmail(roleEmail);
-    setPassword(rolePass);
-  };
+  // One-click instant demo login — directly calls login(), no form needed
+  const handleInstantLogin = useCallback(async (demoEmail: string, demoPassword: string, label: string) => {
+    setError('');
+    setDemoLoading(label);
+    try {
+      const success = await login(demoEmail, demoPassword);
+      if (success) navigate('/');
+    } catch (err: any) {
+      setError(`Demo login failed: ${err.message || 'Please try again.'}`);
+    } finally {
+      setDemoLoading(null);
+    }
+  }, [login, navigate]);
 
   return (
     <main className="min-h-screen bg-[#07070A] flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background Glows */}
-      <div className="absolute -top-[10%] -left-[10%] w-[500px] h-[500px] bg-neonBlue/10 rounded-full blur-[120px] pointer-events-none" aria-hidden="true"></div>
-      <div className="absolute -bottom-[10%] -right-[10%] w-[500px] h-[500px] bg-stadiumPurple/10 rounded-full blur-[120px] pointer-events-none" aria-hidden="true"></div>
+      <div className="absolute -top-[10%] -left-[10%] w-[500px] h-[500px] bg-neonBlue/10 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
+      <div className="absolute -bottom-[10%] -right-[10%] w-[500px] h-[500px] bg-stadiumPurple/10 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
 
       <div className="w-full max-w-md relative z-10">
-        {/* LOGO */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-neonBlue to-emeraldGreen p-[1.5px] flex items-center justify-center shadow-neon-blue/30 shadow-lg mb-3" aria-hidden="true">
-            <div className="w-full h-full rounded-[14.5px] bg-[#07070A] flex items-center justify-center">
-              <Cpu className="w-7 h-7 text-neonBlue animate-pulse" />
+
+        {/* ===== INSTANT DEMO ACCESS BANNER ===== */}
+        <section
+          aria-label="Instant demo access — no registration required"
+          className="mb-6 rounded-2xl border border-neonBlue/30 bg-gradient-to-br from-neonBlue/10 via-emeraldGreen/5 to-transparent p-5 backdrop-blur-sm"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Zap className="w-5 h-5 text-neonBlue" aria-hidden="true" />
+            <h2 className="text-sm font-extrabold text-white tracking-wide">⚡ Instant Demo Access</h2>
+            <span className="ml-auto text-[10px] bg-emeraldGreen/20 text-emeraldGreen border border-emeraldGreen/30 rounded-full px-2 py-0.5 font-bold">NO SIGN-UP NEEDED</span>
+          </div>
+          <p className="text-[11px] text-gray-400 mb-3">Click any role below to instantly enter the app with full access — no email or password required.</p>
+
+          <div className="grid grid-cols-2 gap-2" role="group" aria-label="One-click demo login options">
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.email}
+                type="button"
+                id={`demo-login-${account.label.toLowerCase().replace(/\s+/g, '-')}`}
+                onClick={() => handleInstantLogin(account.email, account.password, account.label)}
+                disabled={demoLoading !== null}
+                aria-busy={demoLoading === account.label}
+                aria-label={`Instantly log in as ${account.label} — ${account.description}`}
+                className={`group relative bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl border border-white/8 ${account.border} text-gray-300 flex flex-col gap-0.5 transition-all duration-200 focus:outline-none ${account.ring} focus:ring-1 disabled:opacity-50 disabled:cursor-wait active:scale-[0.98]`}
+              >
+                {demoLoading === account.label ? (
+                  <span className="text-xs font-bold text-white animate-pulse">Logging in...</span>
+                ) : (
+                  <>
+                    <span className={`text-[11px] font-extrabold ${account.badge.split(' ').find(c => c.startsWith('text-'))}`}>{account.label}</span>
+                    <span className="text-[10px] text-gray-500">{account.description}</span>
+                    <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 group-hover:text-gray-400 transition-colors" aria-hidden="true" />
+                  </>
+                )}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* ===== LOGO ===== */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-neonBlue to-emeraldGreen p-[1.5px] flex items-center justify-center shadow-lg mb-2" aria-hidden="true">
+            <div className="w-full h-full rounded-[13px] bg-[#07070A] flex items-center justify-center">
+              <Cpu className="w-6 h-6 text-neonBlue animate-pulse" />
             </div>
           </div>
-          <h1 className="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-neonBlue via-white to-emeraldGreen bg-clip-text text-transparent">ARENAMIND AI</h1>
-          <p className="text-xs text-gray-500 font-semibold tracking-widest mt-1">FIFA WORLD CUP 2026</p>
+          <h1 className="text-xl font-extrabold tracking-wider bg-gradient-to-r from-neonBlue via-white to-emeraldGreen bg-clip-text text-transparent">ARENAMIND AI</h1>
+          <p className="text-[10px] text-gray-500 font-semibold tracking-widest mt-0.5">FIFA WORLD CUP 2026</p>
         </div>
 
+        {/* ===== MANUAL LOGIN FORM ===== */}
         <GlassCard glowColor="blue" className="w-full">
-          <h2 className="text-xl font-bold text-white mb-6" id="login-heading">Login to Stadium OS</h2>
+          <h2 className="text-base font-bold text-white mb-4" id="login-heading">Or sign in manually</h2>
 
-          {/* Error alert region - announced immediately to screen readers */}
-          <div
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-            id="login-error"
-          >
+          {/* Error alert region */}
+          <div role="alert" aria-live="assertive" aria-atomic="true" id="login-error">
             {error && (
-              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 p-3.5 rounded-xl text-sm mb-5">
+              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-4">
                 <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
                 <span>{error}</span>
               </div>
             )}
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-            aria-labelledby="login-heading"
-            noValidate
-          >
+          <form onSubmit={handleSubmit} className="space-y-3" aria-labelledby="login-heading" noValidate>
             <div>
               <label htmlFor="login-email" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                 Email Address
@@ -124,7 +206,9 @@ export const Login: React.FC = () => {
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
+                  {showPassword
+                    ? <EyeOff className="w-4 h-4" aria-hidden="true" />
+                    : <Eye className="w-4 h-4" aria-hidden="true" />}
                 </button>
               </div>
             </div>
@@ -135,59 +219,16 @@ export const Login: React.FC = () => {
               disabled={loading}
               aria-busy={loading}
               aria-disabled={loading}
-              className="w-full bg-gradient-to-r from-neonBlue to-emeraldGreen hover:from-neonBlue hover:to-emeraldGreen text-[#07070A] font-bold py-3 rounded-xl shadow-lg shadow-neon-blue/20 hover:opacity-90 active:scale-[0.99] transition-all text-sm mt-6 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-neonBlue to-emeraldGreen text-[#07070A] font-bold py-2.5 rounded-xl shadow-lg hover:opacity-90 active:scale-[0.99] transition-all text-sm mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? 'Booting OS Core...' : 'Connect to Console'}
+              {loading ? 'Connecting...' : 'Connect to Console'}
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-500 mt-6">
+          <p className="text-center text-xs text-gray-500 mt-4">
             New operator? <Link to="/register" className="text-neonBlue hover:underline focus:underline focus:outline-none">Request access</Link>
           </p>
         </GlassCard>
-
-        {/* MOCK LOGINS DRAWER */}
-        <section aria-label="Developer sandbox quick login options" className="mt-6 glass rounded-2xl border border-white/5 p-4 text-xs">
-          <p className="font-bold text-gray-400 mb-2.5 uppercase tracking-wider text-[10px]" id="sandbox-label">Developer Sandbox Logins</p>
-          <div className="grid grid-cols-2 gap-2 text-[11px]" role="group" aria-labelledby="sandbox-label">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('admin@arenamind.com', 'admin123')}
-              aria-label="Quick login as Organizer Admin with admin@arenamind.com"
-              className="bg-white/5 hover:bg-white/10 text-left p-2 rounded-lg border border-white/5 hover:border-neonBlue/20 text-gray-300 flex flex-col focus:outline-none focus:ring-1 focus:ring-neonBlue"
-            >
-              <span className="font-bold text-neonBlue">Organizer (Admin)</span>
-              <span>admin@arenamind.com</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('volunteer@arenamind.com', 'volunteer123')}
-              aria-label="Quick login as Volunteer with volunteer@arenamind.com"
-              className="bg-white/5 hover:bg-white/10 text-left p-2 rounded-lg border border-white/5 hover:border-emeraldGreen/20 text-gray-300 flex flex-col focus:outline-none focus:ring-1 focus:ring-emeraldGreen"
-            >
-              <span className="font-bold text-emeraldGreen">Volunteer</span>
-              <span>volunteer@arenamind.com</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('staff@arenamind.com', 'staff123')}
-              aria-label="Quick login as Stadium Staff with staff@arenamind.com"
-              className="bg-white/5 hover:bg-white/10 text-left p-2 rounded-lg border border-white/5 hover:border-stadiumPurple/20 text-gray-300 flex flex-col focus:outline-none focus:ring-1 focus:ring-stadiumPurple"
-            >
-              <span className="font-bold text-stadiumPurple">Stadium Staff</span>
-              <span>staff@arenamind.com</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('fan@arenamind.com', 'fan123')}
-              aria-label="Quick login as Fan Profile with fan@arenamind.com"
-              className="bg-white/5 hover:bg-white/10 text-left p-2 rounded-lg border border-white/5 hover:border-amber-400/20 text-gray-300 flex flex-col focus:outline-none focus:ring-1 focus:ring-amber-400"
-            >
-              <span className="font-bold text-amber-400">Fan Profile</span>
-              <span>fan@arenamind.com</span>
-            </button>
-          </div>
-        </section>
       </div>
     </main>
   );

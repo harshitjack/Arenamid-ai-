@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import apiRouter from './routes/api';
 import { connectDB } from './config/db';
+import { seedDemoUsers } from './config/seed';
 import { initSockets } from './sockets/gateway';
 import { logAIStatus } from './ai/gemini';
 
@@ -69,6 +70,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 if (process.env.NODE_ENV !== 'test') {
   const boot = async () => {
     await connectDB();
+    await seedDemoUsers(); // Ensure demo accounts always exist
 
     // Socket IO gateway
     initSockets(server);
