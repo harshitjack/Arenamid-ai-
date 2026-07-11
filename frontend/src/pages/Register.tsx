@@ -61,10 +61,11 @@ export const Register: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Full Name</label>
+              <label htmlFor="register-name" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Full Name</label>
               <div className="relative">
                 <User className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" />
                 <input
+                  id="register-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -76,10 +77,11 @@ export const Register: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email Address</label>
+              <label htmlFor="register-email" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" />
                 <input
+                  id="register-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -91,10 +93,11 @@ export const Register: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Password</label>
+              <label htmlFor="register-password" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" />
                 <input
+                  id="register-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -106,10 +109,11 @@ export const Register: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Assigned Role</label>
+              <label htmlFor="register-role" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Assigned Role</label>
               <div className="relative">
                 <Shield className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" />
                 <select
+                  id="register-role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-emeraldGreen transition-all appearance-none cursor-pointer"

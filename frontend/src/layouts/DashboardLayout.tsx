@@ -54,7 +54,12 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           </div>
           <span className="font-bold tracking-wider bg-gradient-to-r from-neonBlue to-emeraldGreen bg-clip-text text-transparent">ARENAMIND</span>
         </div>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-white">
+        <button 
+          onClick={() => setSidebarOpen(!sidebarOpen)} 
+          className="text-gray-400 hover:text-white"
+          aria-label={sidebarOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={sidebarOpen}
+        >
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </header>
@@ -111,7 +116,19 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         {/* PROFILE & LOGOUT */}
         <div className="border-t border-white/5 pt-6 space-y-3">
           {user && (
-            <div className="flex items-center gap-3 px-2 cursor-pointer" onClick={() => navigate('/profile')}>
+            <div 
+              className="flex items-center gap-3 px-2 cursor-pointer focus:outline-none focus:ring-1 focus:ring-neonBlue rounded-lg" 
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate('/profile')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate('/profile');
+                }
+              }}
+              aria-label="View user profile"
+            >
               <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-stadiumPurple to-neonBlue flex items-center justify-center text-sm font-bold text-white shadow-neon-blue/10 shadow-sm">
                 {user.name.charAt(0)}
               </div>

@@ -181,8 +181,9 @@ export const EmergencyCenter: React.FC = () => {
             <form onSubmit={handleReportEmergency} className="space-y-4 text-xs">
               {/* INCIDENT TYPE */}
               <div>
-                <label className="block text-gray-400 font-bold uppercase tracking-wider mb-1.5">Emergency Type</label>
+                <label htmlFor="emergency-type" className="block text-gray-400 font-bold uppercase tracking-wider mb-1.5">Emergency Type</label>
                 <select
+                  id="emergency-type"
                   value={type}
                   onChange={(e) => setType(e.target.value as any)}
                   className="w-full bg-[#0D0D13] border border-white/10 rounded-xl py-2.5 px-3.5 text-white"
@@ -197,8 +198,9 @@ export const EmergencyCenter: React.FC = () => {
 
               {/* LOCATION */}
               <div>
-                <label className="block text-gray-400 font-bold uppercase tracking-wider mb-1.5">Stadium Location / Sector</label>
+                <label htmlFor="emergency-location" className="block text-gray-400 font-bold uppercase tracking-wider mb-1.5">Stadium Location / Sector</label>
                 <input
+                  id="emergency-location"
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
@@ -210,8 +212,9 @@ export const EmergencyCenter: React.FC = () => {
 
               {/* DESCRIPTION */}
               <div>
-                <label className="block text-gray-400 font-bold uppercase tracking-wider mb-1.5">Incident Details / Description</label>
+                <label htmlFor="emergency-description" className="block text-gray-400 font-bold uppercase tracking-wider mb-1.5">Incident Details / Description</label>
                 <textarea
+                  id="emergency-description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Provide precise details for AI routing logic (e.g. Elderly fan has collapsed, breathing heavily, unconscious)..."

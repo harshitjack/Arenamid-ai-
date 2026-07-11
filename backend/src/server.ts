@@ -65,20 +65,25 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
-// Boot servers
-const boot = async () => {
-  await connectDB();
+// Boot servers only when not running inside a test environment
+if (process.env.NODE_ENV !== 'test') {
+  const boot = async () => {
+    await connectDB();
 
-  // Socket IO gateway
-  initSockets(server);
+    // Socket IO gateway
+    initSockets(server);
 
-  server.listen(PORT, () => {
-    console.log(`\n======================================================`);
-    console.log(`🏟️  ARENAMIND CORE ENGINE RUNNING ON PORT ${PORT}`);
-    console.log(`🛰️  API ENDPOINT: http://localhost:${PORT}/api`);
-    console.log(`🔌 SOCKET NODE IS OPEN`);
-    console.log(`======================================================\n`);
-  });
-};
+    server.listen(PORT, () => {
+      console.log(`\n======================================================`);
+      console.log(`🏟️  ARENAMIND CORE ENGINE RUNNING ON PORT ${PORT}`);
+      console.log(`🛰️  API ENDPOINT: http://localhost:${PORT}/api`);
+      console.log(`🔌 SOCKET NODE IS OPEN`);
+      console.log(`======================================================\n`);
+    });
+  };
 
-boot();
+  boot();
+}
+
+export { app, server };
+

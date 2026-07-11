@@ -64,10 +64,11 @@ export const Login: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email Address</label>
+              <label htmlFor="login-email" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" />
                 <input
+                  id="login-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -79,10 +80,11 @@ export const Login: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Password</label>
+              <label htmlFor="login-password" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" />
                 <input
+                  id="login-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

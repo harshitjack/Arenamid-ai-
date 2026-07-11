@@ -220,10 +220,12 @@ export const AICopilot: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask ArenaMind Copilot..."
+              aria-label="Message ArenaMind central AI copilot"
               className="flex-1 bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-neonBlue transition-all"
             />
             <button
               type="submit"
+              aria-label="Send message"
               className="bg-neonBlue hover:opacity-90 text-[#07070A] font-bold p-3 rounded-xl shadow-lg shadow-neon-blue/20 transition-all"
             >
               <Send className="w-4 h-4" />
@@ -249,6 +251,7 @@ export const AICopilot: React.FC = () => {
               </div>
               <button 
                 onClick={handleMicSimulate}
+                aria-label="Simulate speech query via microphone"
                 className={`p-2.5 rounded-lg border transition-all ${micActive ? 'bg-red-500/10 border-red-500 text-red-400 animate-pulse' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'}`}
               >
                 <Mic className="w-4 h-4" />
@@ -263,6 +266,7 @@ export const AICopilot: React.FC = () => {
               </div>
               <button 
                 onClick={handleLocationSimulate}
+                aria-label="Simulate sharing seat location beacon"
                 className={`p-2.5 rounded-lg border transition-all ${locationShared ? 'bg-emeraldGreen/10 border-emeraldGreen text-emeraldGreen' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'}`}
               >
                 <MapPin className="w-4 h-4" />
@@ -277,6 +281,7 @@ export const AICopilot: React.FC = () => {
               </div>
               <button 
                 onClick={handleTicketSimulate}
+                aria-label="Simulate scanning match ticket"
                 className={`p-2.5 rounded-lg border transition-all ${ticketScanned ? 'bg-neonBlue/10 border-neonBlue text-neonBlue' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'}`}
               >
                 <Ticket className="w-4 h-4" />
@@ -286,10 +291,13 @@ export const AICopilot: React.FC = () => {
             {/* LANGUAGE TRANSLATE SELECTION */}
             <div className="p-3 bg-white/5 border border-white/5 rounded-xl space-y-2">
               <div className="flex items-center gap-2">
-                <Languages className="w-4 h-4 text-neonBlue" />
-                <p className="font-bold text-white">Translating Engine</p>
+                <label htmlFor="translating-engine-select" className="flex items-center gap-2 font-bold text-white cursor-pointer">
+                  <Languages className="w-4 h-4 text-neonBlue" />
+                  <span>Translating Engine</span>
+                </label>
               </div>
               <select
+                id="translating-engine-select"
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
                 className="w-full bg-[#0D0D13] border border-white/10 rounded-lg py-1.5 px-3 text-white text-xs"
