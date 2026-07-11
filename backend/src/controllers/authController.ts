@@ -46,7 +46,7 @@ const mockUsers: any[] = [
   }
 ];
 
-const JWT_SECRET = process.env.JWT_SECRET || 'arenamind_secret_key_2026';
+const getSecret = () => process.env.JWT_SECRET || 'arenamind_secret_key_2026';
 
 export const register = async (req: Request, res: Response): Promise<any> => {
   const { name, email, password, role, language } = req.body;
@@ -75,7 +75,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 
       const token = jwt.sign(
         { id: user._id, role: user.role, email: user.email, name: user.name },
-        JWT_SECRET,
+        getSecret(),
         { expiresIn: '7d' }
       );
 
@@ -104,7 +104,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 
     const token = jwt.sign(
       { id: newUser.id, role: newUser.role, email: newUser.email, name: newUser.name },
-      JWT_SECRET,
+      getSecret(),
       { expiresIn: '7d' }
     );
 
@@ -140,7 +140,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
       const token = jwt.sign(
         { id: user._id, role: user.role, email: user.email, name: user.name },
-        JWT_SECRET,
+        getSecret(),
         { expiresIn: '7d' }
       );
 
@@ -172,7 +172,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     const token = jwt.sign(
       { id: user.id, role: user.role, email: user.email, name: user.name },
-      JWT_SECRET,
+      getSecret(),
       { expiresIn: '7d' }
     );
 
