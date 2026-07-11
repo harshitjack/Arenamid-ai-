@@ -187,6 +187,64 @@ export const login = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+// ----------------------------------------------------
+// Demo Login — No password from client ever needed
+// Server-side maps role → demo user → JWT
+// ----------------------------------------------------
+const DEMO_ROLE_MAP: Record<string, typeof mockUsers[0]> = {
+  organizer: mockUsers[0],
+  volunteer: mockUsers[1],
+  fan:       mockUsers[2],
+  staff:     mockUsers[3],
+};
+
+export const demoLogin = async (req: Request, res: Response): Promise<any> => {
+  const { role } = req.body;
+  const validRoles = ['organizer', 'volunteer', 'fan', 'staff'];
+
+  if (!role || !validRoles.includes(role)) {
+    return res.status(400).json({
+      error: `Invalid role. Must be one of: ${validRoles.join(', ')}`
+    });
+  }
+
+  try {
+    // If MongoDB is connected, find the real user by email
+    const demoUser = DEMO_ROLE_MAP[role];
+
+    if (process.env.MONGODB_URI && mongoose.connection.readyState === 1) {
+      const user = await UserModel.findOne({ email: demoUser.email });
+      if (user) {
+        const token = jwt.sign(
+          { id: user._id, role: user.role, email: user.email, name: user.name },
+          getSecret(),
+          { expiresIn: '7d' }
+        );
+        return res.status(200).json({
+          token,
+          user: { id: user._id, name: user.name, email: user.email, role: user.role }
+        });
+      }
+    }
+
+    // In-memory fallback
+    const token = jwt.sign(
+      { id: demoUser.id, role: demoUser.role, email: demoUser.email, name: demoUser.name },
+      getSecret(),
+      { expiresIn: '7d' }
+    );
+
+    return res.status(200).json({
+      token,
+      user: { id: demoUser.id, name: demoUser.name, email: demoUser.email, role: demoUser.role }
+    });
+
+  } catch (error) {
+    console.error('Demo login error:', error);
+    res.status(500).json({ error: 'Server error during demo login' });
+  }
+};
+
 export const getProfile = async (req: any, res: Response): Promise<any> => {
   try {
     if (process.env.MONGODB_URI && mongoose.connection.readyState === 1) {

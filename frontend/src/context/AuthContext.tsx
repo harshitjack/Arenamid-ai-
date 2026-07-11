@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export interface User {
   id: string;
   name: string;
@@ -18,6 +20,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  demoLogin: (role: string) => Promise<boolean>;
   register: (name: string, email: string, password: string, role?: string) => Promise<boolean>;
   logout: () => void;
   updatePreferences: (prefs: any) => void;
@@ -25,16 +28,27 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Demo user profiles for offline fallback (NO passwords stored here)
+const DEMO_USERS: Record<string, Omit<User, 'id'> & { id: string }> = {
+  organizer: { id: 'u-1', name: 'Sarah Connor',    email: 'admin@arenamind.com',     role: 'organizer', language: 'en' },
+  volunteer: { id: 'u-2', name: 'David Beckham',   email: 'volunteer@arenamind.com', role: 'volunteer', language: 'es' },
+  fan:       { id: 'u-3', name: 'John Doe',         email: 'fan@arenamind.com',       role: 'fan',       language: 'en' },
+  staff:     { id: 'u-4', name: 'Marcus Rashford', email: 'staff@arenamind.com',     role: 'staff',     language: 'en' },
+};
+
+const setAuthStorage = (token: string, user: User) => {
+  localStorage.setItem('arenamind_token', token);
+  localStorage.setItem('arenamind_user', JSON.stringify(user));
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load local storage auth
     const storedToken = localStorage.getItem('arenamind_token');
     const storedUser = localStorage.getItem('arenamind_user');
-
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
@@ -42,54 +56,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
+  // Standard login with email + password
   const login = async (email: string, password: string): Promise<boolean> => {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Invalid credentials');
+    }
+
+    const data = await response.json();
+    setAuthStorage(data.token, data.user);
+    setToken(data.token);
+    setUser(data.user);
+    return true;
+  };
+
+  // Secure demo login — sends only a role name, no password ever transmitted
+  const demoLogin = async (role: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/demo-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ role }),
       });
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Invalid credentials');
-      }
-
-      const data = await response.json();
-      localStorage.setItem('arenamind_token', data.token);
-      localStorage.setItem('arenamind_user', JSON.stringify(data.user));
-      setToken(data.token);
-      setUser(data.user);
-      return true;
-    } catch (error) {
-      console.warn('Network login failed. Triggering sandbox credential checks.');
-      // Offline fallback: Check presets
-      let mockUser: User | null = null;
-      if (email === 'admin@arenamind.com' && password === 'admin123') {
-        mockUser = { id: 'u-1', name: 'Sarah Connor', email, role: 'organizer', language: 'en' };
-      } else if (email === 'volunteer@arenamind.com' && password === 'volunteer123') {
-        mockUser = { id: 'u-2', name: 'David Beckham', email, role: 'volunteer', language: 'es' };
-      } else if (email === 'fan@arenamind.com' && password === 'fan123') {
-        mockUser = { id: 'u-3', name: 'John Doe', email, role: 'fan', language: 'en', preferences: { accessibilityMode: true, favoriteTeam: 'Canada', dietaryRestrictions: ['halal'] } };
-      } else if (email === 'staff@arenamind.com' && password === 'staff123') {
-        mockUser = { id: 'u-4', name: 'Marcus Rashford', email, role: 'staff', language: 'en' };
-      }
-
-      if (mockUser) {
-        const dummyToken = 'sandbox_token_' + Math.random().toString(36).substring(7);
-        localStorage.setItem('arenamind_token', dummyToken);
-        localStorage.setItem('arenamind_user', JSON.stringify(mockUser));
-        setToken(dummyToken);
-        setUser(mockUser);
+      if (response.ok) {
+        const data = await response.json();
+        setAuthStorage(data.token, data.user);
+        setToken(data.token);
+        setUser(data.user);
         return true;
       }
-      throw error;
+    } catch {
+      // Network unreachable — use offline demo profile (no passwords)
     }
+
+    // Offline fallback: use pre-defined demo user profiles (no passwords)
+    const demoUser = DEMO_USERS[role];
+    if (!demoUser) throw new Error('Invalid demo role');
+
+    const offlineToken = `demo_${role}_${Date.now()}`;
+    setAuthStorage(offlineToken, demoUser);
+    setToken(offlineToken);
+    setUser(demoUser);
+    return true;
   };
 
   const register = async (name: string, email: string, password: string, role?: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role }),
@@ -101,24 +121,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const data = await response.json();
-      localStorage.setItem('arenamind_token', data.token);
-      localStorage.setItem('arenamind_user', JSON.stringify(data.user));
+      setAuthStorage(data.token, data.user);
       setToken(data.token);
       setUser(data.user);
       return true;
     } catch (error) {
-      console.warn('Network registration failed. Enrolling into local sandbox.');
+      // Offline sandbox fallback
+      console.warn('Network registration failed — using local sandbox.');
       const mockUser: User = {
-        id: 'u-' + Math.floor(Math.random() * 1000),
+        id: `u-${Date.now()}`,
         name,
         email,
         role: (role as any) || 'fan',
         language: 'en',
       };
-      const dummyToken = 'sandbox_token_' + Math.random().toString(36).substring(7);
-      localStorage.setItem('arenamind_token', dummyToken);
-      localStorage.setItem('arenamind_user', JSON.stringify(mockUser));
-      setToken(dummyToken);
+      const offlineToken = `sandbox_${Date.now()}`;
+      setAuthStorage(offlineToken, mockUser);
+      setToken(offlineToken);
       setUser(mockUser);
       return true;
     }
@@ -133,19 +152,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updatePreferences = (prefs: any) => {
     if (!user) return;
-    const updatedUser = {
-      ...user,
-      preferences: {
-        ...user.preferences,
-        ...prefs
-      }
-    } as User;
+    const updatedUser = { ...user, preferences: { ...user.preferences, ...prefs } } as User;
     setUser(updatedUser);
     localStorage.setItem('arenamind_user', JSON.stringify(updatedUser));
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updatePreferences }}>
+    <AuthContext.Provider value={{ user, token, loading, login, demoLogin, register, logout, updatePreferences }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,52 +4,44 @@ import { useAuth } from '../context/AuthContext';
 import { GlassCard } from '../components/GlassCard';
 import { Cpu, Lock, Mail, AlertCircle, Eye, EyeOff, Zap, ChevronRight } from 'lucide-react';
 
-// Demo accounts - one-click instant access, no credentials needed
+// Demo accounts: only roles and display info — NO passwords stored in client code
 const DEMO_ACCOUNTS = [
   {
+    role: 'organizer',
     label: 'Organizer (Admin)',
-    email: 'admin@arenamind.com',
-    password: 'admin123',
     description: 'Full system access',
-    color: 'neonBlue',
-    ring: 'focus:ring-blue-400',
-    border: 'hover:border-blue-400/40',
-    badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    textColor: 'text-blue-400',
+    ringClass: 'focus:ring-blue-400',
+    borderClass: 'hover:border-blue-400/40',
   },
   {
+    role: 'volunteer',
     label: 'Field Volunteer',
-    email: 'volunteer@arenamind.com',
-    password: 'volunteer123',
     description: 'Task & incident management',
-    color: 'emeraldGreen',
-    ring: 'focus:ring-emerald-400',
-    border: 'hover:border-emerald-400/40',
-    badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    textColor: 'text-emerald-400',
+    ringClass: 'focus:ring-emerald-400',
+    borderClass: 'hover:border-emerald-400/40',
   },
   {
+    role: 'staff',
     label: 'Stadium Staff',
-    email: 'staff@arenamind.com',
-    password: 'staff123',
     description: 'Operations dashboard',
-    color: 'stadiumPurple',
-    ring: 'focus:ring-purple-400',
-    border: 'hover:border-purple-400/40',
-    badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    textColor: 'text-purple-400',
+    ringClass: 'focus:ring-purple-400',
+    borderClass: 'hover:border-purple-400/40',
   },
   {
+    role: 'fan',
     label: 'Stadium Fan',
-    email: 'fan@arenamind.com',
-    password: 'fan123',
     description: 'Fan experience view',
-    color: 'amber',
-    ring: 'focus:ring-amber-400',
-    border: 'hover:border-amber-400/40',
-    badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    textColor: 'text-amber-400',
+    ringClass: 'focus:ring-amber-400',
+    borderClass: 'hover:border-amber-400/40',
   },
 ];
 
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login, demoLogin } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,14 +50,14 @@ export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [demoLoading, setDemoLoading] = useState<string | null>(null);
 
-  // Manual form submit
+  // Standard form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const success = await login(email, password);
-      if (success) navigate('/');
+      await login(email, password);
+      navigate('/');
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check credentials.');
     } finally {
@@ -73,23 +65,22 @@ export const Login: React.FC = () => {
     }
   };
 
-  // One-click instant demo login — directly calls login(), no form needed
-  const handleInstantLogin = useCallback(async (demoEmail: string, demoPassword: string, label: string) => {
+  // One-click secure demo login — sends only role, zero passwords from client
+  const handleDemoLogin = useCallback(async (role: string, label: string) => {
     setError('');
     setDemoLoading(label);
     try {
-      const success = await login(demoEmail, demoPassword);
-      if (success) navigate('/');
+      await demoLogin(role);
+      navigate('/');
     } catch (err: any) {
       setError(`Demo login failed: ${err.message || 'Please try again.'}`);
     } finally {
       setDemoLoading(null);
     }
-  }, [login, navigate]);
+  }, [demoLogin, navigate]);
 
   return (
     <main className="min-h-screen bg-[#07070A] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Glows */}
       <div className="absolute -top-[10%] -left-[10%] w-[500px] h-[500px] bg-neonBlue/10 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
       <div className="absolute -bottom-[10%] -right-[10%] w-[500px] h-[500px] bg-stadiumPurple/10 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
 
@@ -97,33 +88,33 @@ export const Login: React.FC = () => {
 
         {/* ===== INSTANT DEMO ACCESS BANNER ===== */}
         <section
-          aria-label="Instant demo access — no registration required"
+          aria-labelledby="demo-section-heading"
           className="mb-6 rounded-2xl border border-neonBlue/30 bg-gradient-to-br from-neonBlue/10 via-emeraldGreen/5 to-transparent p-5 backdrop-blur-sm"
         >
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-1">
             <Zap className="w-5 h-5 text-neonBlue" aria-hidden="true" />
-            <h2 className="text-sm font-extrabold text-white tracking-wide">⚡ Instant Demo Access</h2>
-            <span className="ml-auto text-[10px] bg-emeraldGreen/20 text-emeraldGreen border border-emeraldGreen/30 rounded-full px-2 py-0.5 font-bold">NO SIGN-UP NEEDED</span>
+            <h2 id="demo-section-heading" className="text-sm font-extrabold text-white tracking-wide">⚡ Instant Demo Access</h2>
+            <span className="ml-auto text-[10px] bg-emeraldGreen/20 text-emeraldGreen border border-emeraldGreen/30 rounded-full px-2 py-0.5 font-bold">NO SIGN-UP</span>
           </div>
-          <p className="text-[11px] text-gray-400 mb-3">Click any role below to instantly enter the app with full access — no email or password required.</p>
+          <p className="text-[11px] text-gray-400 mb-3">Click any role to instantly explore the app — no email or password required.</p>
 
           <div className="grid grid-cols-2 gap-2" role="group" aria-label="One-click demo login options">
             {DEMO_ACCOUNTS.map((account) => (
               <button
-                key={account.email}
+                key={account.role}
                 type="button"
-                id={`demo-login-${account.label.toLowerCase().replace(/\s+/g, '-')}`}
-                onClick={() => handleInstantLogin(account.email, account.password, account.label)}
+                id={`demo-btn-${account.role}`}
+                onClick={() => handleDemoLogin(account.role, account.label)}
                 disabled={demoLoading !== null}
                 aria-busy={demoLoading === account.label}
-                aria-label={`Instantly log in as ${account.label} — ${account.description}`}
-                className={`group relative bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl border border-white/8 ${account.border} text-gray-300 flex flex-col gap-0.5 transition-all duration-200 focus:outline-none ${account.ring} focus:ring-1 disabled:opacity-50 disabled:cursor-wait active:scale-[0.98]`}
+                aria-label={`Instantly enter as ${account.label} — ${account.description}`}
+                className={`group relative bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl border border-white/8 ${account.borderClass} text-gray-300 flex flex-col gap-0.5 transition-all duration-200 focus:outline-none ${account.ringClass} focus:ring-1 disabled:opacity-50 disabled:cursor-wait active:scale-[0.98]`}
               >
                 {demoLoading === account.label ? (
-                  <span className="text-xs font-bold text-white animate-pulse">Logging in...</span>
+                  <span className="text-xs font-bold text-white animate-pulse">Entering...</span>
                 ) : (
                   <>
-                    <span className={`text-[11px] font-extrabold ${account.badge.split(' ').find(c => c.startsWith('text-'))}`}>{account.label}</span>
+                    <span className={`text-[11px] font-extrabold ${account.textColor}`}>{account.label}</span>
                     <span className="text-[10px] text-gray-500">{account.description}</span>
                     <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 group-hover:text-gray-400 transition-colors" aria-hidden="true" />
                   </>
@@ -134,7 +125,7 @@ export const Login: React.FC = () => {
         </section>
 
         {/* ===== LOGO ===== */}
-        <div className="flex flex-col items-center mb-6">
+        <div className="flex flex-col items-center mb-5">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-neonBlue to-emeraldGreen p-[1.5px] flex items-center justify-center shadow-lg mb-2" aria-hidden="true">
             <div className="w-full h-full rounded-[13px] bg-[#07070A] flex items-center justify-center">
               <Cpu className="w-6 h-6 text-neonBlue animate-pulse" />
@@ -146,10 +137,9 @@ export const Login: React.FC = () => {
 
         {/* ===== MANUAL LOGIN FORM ===== */}
         <GlassCard glowColor="blue" className="w-full">
-          <h2 className="text-base font-bold text-white mb-4" id="login-heading">Or sign in manually</h2>
+          <h2 className="text-base font-bold text-white mb-4" id="login-form-heading">Or sign in with credentials</h2>
 
-          {/* Error alert region */}
-          <div role="alert" aria-live="assertive" aria-atomic="true" id="login-error">
+          <div role="alert" aria-live="assertive" aria-atomic="true" id="login-error-region">
             {error && (
               <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-4">
                 <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
@@ -158,7 +148,7 @@ export const Login: React.FC = () => {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3" aria-labelledby="login-heading" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-3" aria-labelledby="login-form-heading" noValidate>
             <div>
               <label htmlFor="login-email" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                 Email Address
@@ -175,7 +165,7 @@ export const Login: React.FC = () => {
                   placeholder="name@example.com"
                   autoComplete="email"
                   aria-required="true"
-                  aria-describedby={error ? 'login-error' : undefined}
+                  aria-describedby={error ? 'login-error-region' : undefined}
                   required
                 />
               </div>
@@ -206,15 +196,13 @@ export const Login: React.FC = () => {
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
                 >
-                  {showPassword
-                    ? <EyeOff className="w-4 h-4" aria-hidden="true" />
-                    : <Eye className="w-4 h-4" aria-hidden="true" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
                 </button>
               </div>
             </div>
 
             <button
-              id="login-submit"
+              id="login-submit-btn"
               type="submit"
               disabled={loading}
               aria-busy={loading}
