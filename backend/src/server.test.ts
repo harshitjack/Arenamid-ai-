@@ -50,6 +50,47 @@ describe('POST /api/auth/register', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/already exists/i);
   });
+
+  it('should force role to fan even if organizer is requested', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'Malicious User',
+      email: `malic${Date.now()}@example.com`,
+      password: 'securepass123',
+      role: 'organizer'
+    });
+    expect(res.status).toBe(201);
+    expect(res.body.user.role).toBe('fan'); // Verify role is forced to fan
+  });
+
+  it('should return 400 when email format is invalid', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'Test',
+      email: 'notanemail',
+      password: 'securepass123'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/invalid email/i);
+  });
+
+  it('should return 400 when password is less than 6 characters', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'Test',
+      email: `shortpwd${Date.now()}@example.com`,
+      password: '123'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/at least 6 characters/i);
+  });
+
+  it('should return 400 when registration input types are invalid objects', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: { $ne: null },
+      email: `type${Date.now()}@example.com`,
+      password: 'securepass123'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/invalid input types/i);
+  });
 });
 
 // ===================================================
@@ -123,6 +164,15 @@ describe('POST /api/auth/login', () => {
   it('should return 400 when password is missing', async () => {
     const res = await request(app).post('/api/auth/login').send({ email: 'admin@arenamind.com' });
     expect(res.status).toBe(400);
+  });
+
+  it('should return 400 when login input types are invalid objects', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: { $gt: '' },
+      password: 'password123'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/invalid input types/i);
   });
 });
 

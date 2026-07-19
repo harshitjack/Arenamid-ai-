@@ -70,7 +70,8 @@ const apiLimiter = rateLimit({
   max: 200, // limit each IP to 200 requests per window
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' }
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
+  skip: () => process.env.NODE_ENV === 'test',
 });
 app.use('/api/', apiLimiter);
 

@@ -28,6 +28,7 @@ const authRateLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many authentication attempts. Please wait 15 minutes and try again.' },
   skipSuccessfulRequests: false,
+  skip: () => process.env.NODE_ENV === 'test',
 });
 
 // More lenient limiter for demo login (public, read-only in effect)
@@ -35,6 +36,7 @@ const demoRateLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 10,
   message: { error: 'Too many demo login attempts. Please wait a moment.' },
+  skip: () => process.env.NODE_ENV === 'test',
 });
 
 // Apply sanitization globally to all routes in this router

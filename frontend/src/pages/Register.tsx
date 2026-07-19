@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { GlassCard } from '../components/GlassCard';
-import { Cpu, Lock, Mail, User, Shield, AlertCircle, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { Cpu, Lock, Mail, User, AlertCircle, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const { register } = useAuth();
@@ -10,7 +10,7 @@ export const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('fan');
+  const role = 'fan';
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -73,7 +73,7 @@ export const Register: React.FC = () => {
         </div>
 
         <GlassCard glowColor="green" className="w-full">
-          <h2 className="text-xl font-bold text-white mb-6" id="register-heading">Create Operator Account</h2>
+          <h2 className="text-xl font-bold text-white mb-6" id="register-heading">Create Fan Account</h2>
 
           {/* Error alert region - announced immediately to screen readers */}
           <div
@@ -108,7 +108,7 @@ export const Register: React.FC = () => {
                   name="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emeraldGreen transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emeraldGreen focus:ring-2 focus:ring-emeraldGreen/30 transition-all"
                   placeholder="John Doe"
                   autoComplete="name"
                   aria-required="true"
@@ -129,7 +129,7 @@ export const Register: React.FC = () => {
                   name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emeraldGreen transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emeraldGreen focus:ring-2 focus:ring-emeraldGreen/30 transition-all"
                   placeholder="name@example.com"
                   autoComplete="email"
                   aria-required="true"
@@ -151,7 +151,7 @@ export const Register: React.FC = () => {
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-12 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emeraldGreen transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-12 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-emeraldGreen focus:ring-2 focus:ring-emeraldGreen/30 transition-all"
                   placeholder="Min. 6 characters"
                   autoComplete="new-password"
                   aria-required="true"
@@ -162,7 +162,7 @@ export const Register: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-emeraldGreen/30 rounded-md p-0.5"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
                 >
@@ -188,39 +188,17 @@ export const Register: React.FC = () => {
               )}
             </div>
 
-            <div>
-              <label htmlFor="register-role" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
-                Assigned Role
-              </label>
-              <div className="relative">
-                <Shield className="absolute left-3.5 top-3 w-4 h-4 text-gray-500" aria-hidden="true" />
-                <select
-                  id="register-role"
-                  name="role"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  aria-required="true"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-emeraldGreen transition-all appearance-none cursor-pointer"
-                >
-                  <option value="fan" className="bg-[#0D0D13]">Stadium Fan</option>
-                  <option value="volunteer" className="bg-[#0D0D13]">Field Volunteer</option>
-                  <option value="staff" className="bg-[#0D0D13]">Operations Staff</option>
-                  <option value="organizer" className="bg-[#0D0D13]">FIFA Organizer</option>
-                </select>
-              </div>
-            </div>
-
             <button
               id="register-submit"
               type="submit"
               disabled={loading}
               aria-busy={loading}
               aria-disabled={loading}
-              className="w-full bg-gradient-to-r from-emeraldGreen to-neonBlue hover:from-emeraldGreen hover:to-neonBlue text-[#07070A] font-bold py-3 rounded-xl shadow-lg shadow-emeraldGreen/20 hover:opacity-90 active:scale-[0.99] transition-all text-sm mt-6 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-emeraldGreen to-neonBlue hover:from-emeraldGreen hover:to-neonBlue text-[#07070A] font-bold py-3 rounded-xl shadow-lg shadow-emeraldGreen/20 hover:opacity-90 active:scale-[0.99] transition-all text-sm mt-6 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-emeraldGreen/50"
             >
               {loading
                 ? 'Initializing Interface...'
-                : <><CheckCircle2 className="w-4 h-4" aria-hidden="true" /> Authorize Operator</>
+                : <><CheckCircle2 className="w-4 h-4" aria-hidden="true" /> Create Fan Account</>
               }
             </button>
           </form>

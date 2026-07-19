@@ -132,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: `u-${Date.now()}`,
         name,
         email,
-        role: (role as any) || 'fan',
+        role: 'fan',
         language: 'en',
       };
       const offlineToken = `sandbox_${Date.now()}`;

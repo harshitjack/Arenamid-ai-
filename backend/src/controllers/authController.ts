@@ -49,10 +49,28 @@ const mockUsers: any[] = [
 const getSecret = () => process.env.JWT_SECRET || 'arenamind_secret_key_2026';
 
 export const register = async (req: Request, res: Response): Promise<any> => {
-  const { name, email, password, role, language } = req.body;
+  const { name, email, password, language } = req.body;
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Please provide all required fields' });
   }
+
+  // Type check to prevent NoSQL Injection (forcing inputs to be simple strings)
+  if (typeof name !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Invalid input types' });
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
+  // Validate password length
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+  }
+
+  const role = 'fan'; // Enforce fan role exclusively for public registration
 
   try {
     const salt = await bcrypt.genSalt(10);
@@ -69,7 +87,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         name,
         email,
         password: passwordHash,
-        role: role || 'fan',
+        role,
         language: language || 'en',
       });
 
@@ -96,7 +114,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       name,
       email,
       passwordHash,
-      role: role || 'fan',
+      role,
       language: language || 'en',
       preferences: { accessibilityMode: false, favoriteTeam: '', dietaryRestrictions: [] }
     };
@@ -123,6 +141,11 @@ export const login = async (req: Request, res: Response): Promise<any> => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'Please provide email and password' });
+  }
+
+  // Type check to prevent NoSQL Injection (forcing inputs to be simple strings)
+  if (typeof email !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Invalid input types' });
   }
 
   try {

@@ -161,7 +161,7 @@ export const Login: React.FC = () => {
                   name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-neonBlue transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-neonBlue focus:ring-2 focus:ring-neonBlue/30 transition-all"
                   placeholder="name@example.com"
                   autoComplete="email"
                   aria-required="true"
@@ -183,7 +183,7 @@ export const Login: React.FC = () => {
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-12 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-neonBlue transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-12 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-neonBlue focus:ring-2 focus:ring-neonBlue/30 transition-all"
                   placeholder="••••••••"
                   autoComplete="current-password"
                   aria-required="true"
@@ -192,7 +192,7 @@ export const Login: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-neonBlue/30 rounded-md p-0.5"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
                 >
@@ -207,7 +207,7 @@ export const Login: React.FC = () => {
               disabled={loading}
               aria-busy={loading}
               aria-disabled={loading}
-              className="w-full bg-gradient-to-r from-neonBlue to-emeraldGreen text-[#07070A] font-bold py-2.5 rounded-xl shadow-lg hover:opacity-90 active:scale-[0.99] transition-all text-sm mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-neonBlue to-emeraldGreen text-[#07070A] font-bold py-2.5 rounded-xl shadow-lg hover:opacity-90 active:scale-[0.99] transition-all text-sm mt-4 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-neonBlue/50"
             >
               {loading ? 'Connecting...' : 'Connect to Console'}
             </button>
