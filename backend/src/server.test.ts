@@ -180,17 +180,16 @@ describe('POST /api/auth/login', () => {
 // Auth — Demo Login Endpoint Tests (Secure)
 // ===================================================
 describe('POST /api/auth/demo-login', () => {
-  it('should return a valid token for organizer role', async () => {
+  it('should reject demo login for organizer role', async () => {
     const res = await request(app).post('/api/auth/demo-login').send({ role: 'organizer' });
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('token');
-    expect(res.body.user.role).toBe('organizer');
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/only available for the fan role/i);
   });
 
-  it('should return a valid token for volunteer role', async () => {
+  it('should reject demo login for volunteer role', async () => {
     const res = await request(app).post('/api/auth/demo-login').send({ role: 'volunteer' });
-    expect(res.status).toBe(200);
-    expect(res.body.user.role).toBe('volunteer');
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/only available for the fan role/i);
   });
 
   it('should return a valid token for fan role', async () => {
@@ -199,10 +198,10 @@ describe('POST /api/auth/demo-login', () => {
     expect(res.body.user.role).toBe('fan');
   });
 
-  it('should return a valid token for staff role', async () => {
+  it('should reject demo login for staff role', async () => {
     const res = await request(app).post('/api/auth/demo-login').send({ role: 'staff' });
-    expect(res.status).toBe(200);
-    expect(res.body.user.role).toBe('staff');
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/only available for the fan role/i);
   });
 
   it('should reject unknown roles', async () => {

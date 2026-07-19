@@ -7,30 +7,6 @@ import { Cpu, Lock, Mail, AlertCircle, Eye, EyeOff, Zap, ChevronRight } from 'lu
 // Demo accounts: only roles and display info — NO passwords stored in client code
 const DEMO_ACCOUNTS = [
   {
-    role: 'organizer',
-    label: 'Organizer (Admin)',
-    description: 'Full system access',
-    textColor: 'text-blue-400',
-    ringClass: 'focus:ring-blue-400',
-    borderClass: 'hover:border-blue-400/40',
-  },
-  {
-    role: 'volunteer',
-    label: 'Field Volunteer',
-    description: 'Task & incident management',
-    textColor: 'text-emerald-400',
-    ringClass: 'focus:ring-emerald-400',
-    borderClass: 'hover:border-emerald-400/40',
-  },
-  {
-    role: 'staff',
-    label: 'Stadium Staff',
-    description: 'Operations dashboard',
-    textColor: 'text-purple-400',
-    ringClass: 'focus:ring-purple-400',
-    borderClass: 'hover:border-purple-400/40',
-  },
-  {
     role: 'fan',
     label: 'Stadium Fan',
     description: 'Fan experience view',
@@ -96,9 +72,9 @@ export const Login: React.FC = () => {
             <h2 id="demo-section-heading" className="text-sm font-extrabold text-white tracking-wide">⚡ Instant Demo Access</h2>
             <span className="ml-auto text-[10px] bg-emeraldGreen/20 text-emeraldGreen border border-emeraldGreen/30 rounded-full px-2 py-0.5 font-bold">NO SIGN-UP</span>
           </div>
-          <p className="text-[11px] text-gray-400 mb-3">Click any role to instantly explore the app — no email or password required.</p>
+          <p className="text-[11px] text-gray-400 mb-3">Click below to instantly explore the app — no email or password required.</p>
 
-          <div className="grid grid-cols-2 gap-2" role="group" aria-label="One-click demo login options">
+          <div className="grid grid-cols-1 gap-2" role="group" aria-label="One-click demo login options">
             {DEMO_ACCOUNTS.map((account) => (
               <button
                 key={account.role}
@@ -108,15 +84,15 @@ export const Login: React.FC = () => {
                 disabled={demoLoading !== null}
                 aria-busy={demoLoading === account.label}
                 aria-label={`Instantly enter as ${account.label} — ${account.description}`}
-                className={`group relative bg-white/5 hover:bg-white/10 text-left p-3 rounded-xl border border-white/8 ${account.borderClass} text-gray-300 flex flex-col gap-0.5 transition-all duration-200 focus:outline-none ${account.ringClass} focus:ring-1 disabled:opacity-50 disabled:cursor-wait active:scale-[0.98]`}
+                className={`group relative bg-white/5 hover:bg-white/10 text-left p-3.5 rounded-xl border border-white/8 ${account.borderClass} text-gray-300 flex flex-col gap-0.5 transition-all duration-200 focus:outline-none ${account.ringClass} focus:ring-2 disabled:opacity-50 disabled:cursor-wait active:scale-[0.98]`}
               >
                 {demoLoading === account.label ? (
                   <span className="text-xs font-bold text-white animate-pulse">Entering...</span>
                 ) : (
                   <>
-                    <span className={`text-[11px] font-extrabold ${account.textColor}`}>{account.label}</span>
+                    <span className={`text-xs font-extrabold ${account.textColor}`}>{account.label}</span>
                     <span className="text-[10px] text-gray-500">{account.description}</span>
-                    <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 group-hover:text-gray-400 transition-colors" aria-hidden="true" />
+                    <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors" aria-hidden="true" />
                   </>
                 )}
               </button>

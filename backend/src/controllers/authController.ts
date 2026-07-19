@@ -223,11 +223,10 @@ const DEMO_ROLE_MAP: Record<string, typeof mockUsers[0]> = {
 
 export const demoLogin = async (req: Request, res: Response): Promise<any> => {
   const { role } = req.body;
-  const validRoles = ['organizer', 'volunteer', 'fan', 'staff'];
 
-  if (!role || !validRoles.includes(role)) {
+  if (role !== 'fan') {
     return res.status(400).json({
-      error: `Invalid role. Must be one of: ${validRoles.join(', ')}`
+      error: 'Demo login is only available for the fan role.'
     });
   }
 
